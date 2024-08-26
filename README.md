@@ -37,9 +37,8 @@ OPENAI_API_KEY='你的 OpenAI API 密鑰'
 
 3. 透過 RSS feed 抓取新聞並且以AI總結：
 
-
     ```bash
-    python -m ai_news '{RSS_feed_URL}' --file './news/{css_filename}'
+    python -m ai_news '{RSS_feed_URL}' --file './data/news/{csv_filename}'
     ```
 
 4. 以 Streamlit 呈現新聞結果：

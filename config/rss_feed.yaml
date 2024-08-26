@@ -1,0 +1,122 @@
+news_sources:
+  bbc:
+    name: BBC News
+    feeds:
+      - name: World
+        url: 'http://feeds.bbci.co.uk/news/world/rss.xml'
+      - name: Top Stories
+        url: 'http://feeds.bbci.co.uk/news/rss.xml'
+
+  the_new_york_times:
+    name: The New York Times
+    feeds:
+      - name: World
+        url: 'https://rss.nytimes.com/services/xml/rss/nyt/World.xml'
+      - name: Top Stories
+        url: 'https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml'
+
+  cnn:
+    name: CNN
+    feeds:
+      - name: World
+        url: 'http://rss.cnn.com/rss/edition_world.rss'
+      - name: Latest News
+        url: 'http://rss.cnn.com/rss/cnn_latest.rss'
+
+  reuters:
+    name: Reuters
+    feeds:
+      - name: World News
+        url: 'http://feeds.reuters.com/Reuters/worldNews'
+      - name: Business News
+        url: 'http://feeds.reuters.com/reuters/businessNews'
+      - name: Top News
+        url: 'http://feeds.reuters.com/reuters/topNews'
+
+  al_jazeera:
+    name: Al Jazeera
+    feeds:
+      - name: World
+        url: 'https://www.aljazeera.com/xml/rss/all.xml'
+
+  the_guardian:
+    name: The Guardian
+    feeds:
+      - name: Latest
+        url: 'https://www.theguardian.com/uk-news/rss'
+      - name: World
+        url: 'https://www.theguardian.com/world/rss'
+
+  bloomberg:
+    name: Bloomberg
+    feeds:
+      - name: Politics
+        url: 'https://feeds.bloomberg.com/politics/news.rss'
+      - name: Markets
+        url: 'https://feeds.bloomberg.com/markets/news.rss'
+      - name: Technology
+        url: 'https://feeds.bloomberg.com/technology/news.rss'
+      - name: Wealth
+        url: 'https://feeds.bloomberg.com/wealth/news.rss'
+      - name: Economics
+        url: 'https://feeds.bloomberg.com/economics/news.rss'
+
+  financial_times:
+    name: Financial Times
+    feeds:
+      - name: World News
+        url: 'http://feeds.ft.com/rss/world'
+      - name: Markets
+        url: 'http://feeds.ft.com/rss/markets'
+
+  wall_street_journal:
+    name: The Wall Street Journal
+    feeds:
+      - name: U.S. Business
+        url: 'https://feeds.a.dj.com/rss/RSSWSJD.xml'
+      - name: Markets
+        url: 'https://feeds.a.dj.com/rss/RSSMarketsMain.xml'
+
+  cnbc:
+    name: CNBC
+    feeds:
+      - name: Top News
+        url: 'https://www.cnbc.com/id/100003114/device/rss/rss.html'
+      - name: Market News
+        url: 'https://www.cnbc.com/id/15839069/device/rss/rss.html'
+
+  marketwatch:
+    name: MarketWatch
+    feeds:
+      - name: Top Stories
+        url: 'https://feeds.marketwatch.com/marketwatch/topstories/'
+      - name: Market Pulse
+        url: 'https://feeds.marketwatch.com/marketwatch/marketpulse/'
+
+  investing:
+    name: Investing.com
+    feeds:
+      - name: Top News
+        url: 'https://www.investing.com/rss/news.rss'
+      - name: Economic Indicators
+        url: 'https://www.investing.com/rss/economic-calendar.rss'
+
+  seeking_alpha:
+    name: Seeking Alpha
+    feeds:
+      - name: Latest Articles
+        url: 'https://seekingalpha.com/feed.xml'
+
+  economist:
+    name: The Economist
+    feeds:
+      - name: World News
+        url: 'http://www.economist.com/rss/world_news_rss.xml'
+      - name: Business & Finance
+        url: 'http://www.economist.com/rss/business_finance_rss.xml'
+
+  yahoo_finance:
+    name: Yahoo Finance
+    feeds:
+      - name: Top Stories
+        url: 'https://finance.yahoo.com/news/rss.xml'

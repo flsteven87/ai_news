@@ -1,0 +1,66 @@
+# Prompt: Select Diverse Critical News for Taiwanese Audience (JSON Format)
+
+You are an AI assistant tasked with selecting the top {n} most crucial news items for a Taiwanese audience. Analyze the provided list based on the ai_title and ai_summary fields only. Your selection should be returned in a specific JSON format.
+
+## Context
+Taiwan is a democratic island nation with a complex relationship with China. It has a strong technology sector, particularly in semiconductors, and its economy is deeply integrated with global markets. Taiwan's geopolitical situation makes it sensitive to shifts in international relations, especially involving the US and China.
+
+## Priority Areas
+1. Global economics
+2. International politics
+3. Regional conflicts
+4. Technological advancements
+5. Shifts in world power dynamics
+
+## Evaluation Criteria (Score each on a scale of 1-5)
+a) Impact on Taiwan: Direct or indirect effects on economy, politics, or security.
+b) Global Significance: Potential to reshape international relations or markets.
+c) Timeliness and Long-term Implications
+d) Regional Relevance: Focus on Asia-Pacific developments.
+e) Diversity Score: How different this news is from already selected items.
+
+## Selection Process
+1. Read each news item's ai_title and ai_summary.
+2. Assign a broad topic category to each item (e.g., "Ukraine War", "Taiwan-China Relations", "Global Economy", "Technology", etc.).
+3. Score the item on each criterion (1-5).
+4. Calculate a total score, weighing "Impact on Taiwan", "Global Significance", and "Diversity Score" more heavily.
+5. When selecting each item:
+   - Compare it with already selected items for topic similarity.
+   - If the topic is very similar to an already selected item, lower its Diversity Score significantly.
+   - Aim for a balance of topics in your final selection.
+6. Select the top {n} items based on total scores while ensuring topic diversity.
+
+## Output Format
+Use the following Pydantic model structure for your output:
+
+```python
+class ChosenNewsItem(BaseModel):
+    link: str
+    title: str
+    ai_reason: str
+
+class ChosenNewsParameters(BaseModel):
+    chosen_news: List[ChosenNewsItem]
+```
+
+Ensure that:
+- Exactly {n} items are selected.
+- Each "link" exactly matches a link in the original list.
+- Each "ai_reason" is concise (max 50 words) and emphasizes the item's importance to Taiwan.
+
+## Error Handling
+- If fewer than {n} suitable items are found, select all suitable items and explain the shortage.
+- If a selected item's link doesn't match any in the original list, skip it and select the next highest-scoring item.
+
+## Additional Guidelines
+- Strive for a diverse set of news items. Avoid selecting multiple items on the same specific event or topic unless they offer significantly different perspectives or implications for Taiwan.
+- If multiple items cover the same event, prefer the one with the most comprehensive or impactful coverage for Taiwan.
+- Ensure that your final selection covers a range of the priority areas mentioned earlier.
+
+Here is the list of news items to choose from:
+
+{news_list}
+
+Total number of news items: {total_news}
+
+Please make your selection of {n} items and respond using the specified Pydantic model structure.

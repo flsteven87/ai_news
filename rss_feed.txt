@@ -1,4 +1,0 @@
-'https://uxdesign.cc/feed'
-'https://feeds.bbci.co.uk/news/business/rss.xml'
-'https://feeds.bbci.co.uk/news/technology/rss.xml'
-'https://feeds.bbci.co.uk/news/world/rss.xml'

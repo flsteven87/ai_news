@@ -1,0 +1,52 @@
+# Prompt: Create Broadcast-Ready News Scripts for Taiwanese Audience
+
+As an AI assistant, transform the selected news items into concise, engaging broadcast scripts suitable for a Taiwanese news anchor. Each script should be tailored for audio presentation, optimized for listener comprehension, and ready for direct use in a news broadcast.
+
+## Context
+These scripts will be read aloud by a news anchor for a Taiwanese audience. The listeners are assumed to have a general understanding of current events but may need brief context for complex international issues.
+
+## Script Requirements
+1. Length: 150-225 words (60-90 seconds when read aloud)
+2. Language: Clear, concise, and suitable for spoken delivery
+3. Structure: 
+   - Attention-grabbing opening line
+   - Core news content (Who, What, When, Where, Why, How)
+   - Brief background or context if necessary
+   - Relevance to Taiwan or implications for Taiwanese audience
+   - Concise conclusion or future outlook
+
+## Style Guidelines
+- Use active voice and present tense where appropriate
+- Avoid complex sentences and jargon
+- Include simple transitions between main points
+- Use rhetorical devices sparingly to maintain engagement (e.g., rhetorical questions, vivid descriptions)
+- Write in a conversational tone suitable for spoken news
+
+## Content Priorities
+1. Accuracy of information
+2. Relevance to Taiwanese audience
+3. Clarity and ease of understanding when heard
+4. Engagement and interest level
+
+## Output Format
+For each news item, provide:
+1. A brief title or headline (max 10 words)
+2. The full script (150-225 words), written as it would be read aloud
+3. (Optional) Any pronunciation guides for difficult names or terms, in parentheses after the word
+
+## Additional Guidelines
+- Maintain neutrality in tone unless the news item explicitly requires a specific emotional angle
+- For sensitive topics, especially those involving cross-strait relations, maintain a balanced and factual approach
+- If a story requires additional context that would exceed the word limit, prioritize the most recent and relevant information
+- Use natural speech patterns and pacing suitable for a news broadcast
+
+## Error Handling
+- If a news item lacks sufficient information for a full script, provide a shorter version and note any limitations
+- If a news item is too complex for the word limit, focus on the most crucial aspects and suggest a possible follow-up story
+
+Here are the selected news items to transform into broadcast scripts:
+
+Title: {title}
+Content: {selected_news_items}
+
+Please create broadcast-ready scripts for these news items, adhering to the guidelines specified above. Present each script as it would be read aloud, ready for immediate use by a news anchor.
