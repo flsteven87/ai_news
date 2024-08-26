@@ -170,6 +170,7 @@ data/news_content/*
 data/news_chosen/*
 data/news_broadcast/*
 data/news_rewrite/*
+data/latest/*
 
 # Secrets
 secrets/*

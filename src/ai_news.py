@@ -13,6 +13,7 @@ from pathlib import Path
 from src.config.log_config import setup_logger
 import time
 from ratelimit import limits, sleep_and_retry
+import random
 
 # 初始化日誌記錄器
 logger = setup_logger(__name__)
@@ -22,7 +23,7 @@ class AINewsException(Exception):
     pass
 
 class AINews:
-    def __init__(self, rss_feed_url: str, source: str, feed_name: str, re_fetch: bool = False, re_summarize: bool = True):
+    def __init__(self, rss_feed_url: str, source: str, feed_name: str, re_fetch: bool = False, re_summarize: bool = False, use_proxy: bool = False):
         self.rss_feed_url = rss_feed_url
         self.source = source
         self.feed_name = feed_name
@@ -34,6 +35,19 @@ class AINews:
         self.config_path = Path("./src/config/rss_feed.yaml")
         self.re_fetch = re_fetch
         self.re_summarize = re_summarize
+        self.use_proxy = use_proxy
+        self.proxies = [
+            {'http': '138.197.102.119:80'},
+            {'http': '160.248.189.95:3128'},
+            {'http': '160.248.93.134:3128'},
+            {'http': '103.216.50.11:8080'},
+            {'http': '124.236.25.252:8080'},
+            {'http': '38.242.199.124:8089'},
+            {'http': '160.248.93.158:3128'},
+            {'http': '116.169.54.253:8080'},
+            {'http': '160.248.186.67:3128'},
+            {'http': '190.186.18.161:999'},
+        ]
         load_dotenv()
         openai.api_key = os.environ.get('OPENAI_API_KEY')
         self.client = openai.OpenAI()
@@ -98,14 +112,32 @@ class AINews:
             logger.info(f"跳過：{entry['title']} - 檔案已存在。")
             return
 
-        try:
-            response = requests.get(f"https://r.jina.ai/{entry['link']}", timeout=100)
-            response.raise_for_status()
-            with open(file_path, 'w', encoding='utf-8') as f:
-                f.write(response.text)
-            logger.info(f"已爬取：{entry['title']} - 發布時間：{entry['published']} - URL：{entry['link']} - 狀態：{response.status_code}")
-        except requests.RequestException as e:
-            logger.error(f"爬取內容失敗：{entry['title']} - URL：{entry['link']} - 錯誤：{e}")
+        jina_reader_url = f"https://r.jina.ai/{entry['link']}"
+        
+        if self.use_proxy:
+            for _ in range(len(self.proxies)):
+                proxy = random.choice(self.proxies)
+                try:
+                    response = requests.get(jina_reader_url, proxies={'http': proxy['http']}, timeout=100)
+                    response.raise_for_status()
+                    break
+                except requests.RequestException as e:
+                    logger.warning(f"使用代理 {proxy['http']} 失敗：{e}")
+                    continue
+            else:
+                logger.error(f"所有代理都失敗，無法爬取：{entry['title']}")
+                return
+        else:
+            try:
+                response = requests.get(jina_reader_url, timeout=100)
+                response.raise_for_status()
+            except requests.RequestException as e:
+                logger.error(f"爬取內容失敗：{entry['title']} - URL：{entry['link']} - 錯誤：{e}")
+                return
+
+        with open(file_path, 'w', encoding='utf-8') as f:
+            f.write(response.text)
+        logger.info(f"已爬取：{entry['title']} - 發布時間：{entry['published']} - URL：{entry['link']} - 狀態：{response.status_code}")
 
     def fetch_news_content(self, entries: List[Dict]) -> None:
         self.content_folder.mkdir(parents=True, exist_ok=True)
@@ -170,16 +202,32 @@ class AINews:
             entries_df = pd.DataFrame(feed_data['entries'])
             self.fetch_news_content(feed_data['entries'])
             
+            # 檢查是否已存在摘要資料
+            existing_df = None
+            if not self.re_summarize and self.filename.exists():
+                existing_df = pd.read_csv(self.filename)
+            
             for index, news in entries_df.iterrows():
                 title = news['title']
                 safe_link = self.get_safe_filename(news["link"])
                 file_path = self.content_folder / safe_link
+                
+                # 檢查是否需要摘要
+                if not self.re_summarize and existing_df is not None and news['link'] in existing_df['link'].values:
+                    existing_row = existing_df[existing_df['link'] == news['link']].iloc[0]
+                    if existing_row['ai_title'] != '處理失敗':
+                        entries_df.loc[index, 'ai_title'] = existing_row['ai_title']
+                        entries_df.loc[index, 'ai_summary'] = existing_row['ai_summary']
+                        logger.info(f"Skipped summarization: {existing_row['ai_title']}")
+                        continue
                 
                 try:
                     with open(file_path, 'r', encoding='utf-8') as f:
                         news_content = f.read()
                     
                     ai_title, ai_summary = self.summarize_news(title, news_content)
+                    if ai_title == '處理失敗' or not ai_title or not ai_summary:
+                        raise Exception("摘要生成失敗")
                     entries_df.loc[index, 'ai_title'] = ai_title
                     entries_df.loc[index, 'ai_summary'] = ai_summary
                     logger.info(f"Processed: {ai_title}")
@@ -224,6 +272,7 @@ def main():
         parser.add_argument('-s', '--source', choices=list(rss_config['news_sources'].keys()), help='Choose news source')
         parser.add_argument('-f', '--feed', help='Choose specific feed')
         parser.add_argument('-ff', '--force-fetch', action='store_true', help='Force fetch all news content')
+        parser.add_argument('-p', '--use-proxy', action='store_true', help='Use proxy for fetching news content')
         args = parser.parse_args()
 
         if not args.source:
@@ -250,7 +299,7 @@ def main():
         rss_feed_url = feed['url']
         logger.info(f"Selected feed: {feed['name']}")
 
-        ai_news = AINews(rss_feed_url, args.source, args.feed, re_fetch=args.force_fetch)
+        ai_news = AINews(rss_feed_url, args.source, args.feed, re_fetch=args.force_fetch, use_proxy=args.use_proxy)
         ai_news.run()
     except AINewsException as e:
         logger.error(f"AINews error in main: {e}")

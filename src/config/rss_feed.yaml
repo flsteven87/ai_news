@@ -120,3 +120,21 @@ news_sources:
     feeds:
       - name: Top Stories
         url: 'https://finance.yahoo.com/news/rss.xml'
+
+  fox_news:
+    name: Fox News
+    feeds:
+      - name: Latest News
+        url: 'https://moxie.foxnews.com/google-publisher/latest.xml'
+
+  yahoo_news:
+    name: Yahoo News
+    feeds:
+      - name: Latest News
+        url: 'https://news.yahoo.com/rss'
+
+  the_verge:
+    name: The Verge
+    feeds:
+      - name: Latest News
+        url: 'https://www.theverge.com/rss/index.xml'

@@ -23,6 +23,7 @@ class Poster:
     def __init__(self):
         self.logger = setup_logger(__name__)
         self.config_path = Path("./src/config/rss_feed.yaml")
+        self.keyword = "Latest"  # 參數化 "Latest" 關鍵字
         self.rss_config = self.load_rss_config()
         self.ai_news_instances: Dict[str, AINews] = {}
         self.last_processed_time: Dict[str, float] = {}
@@ -35,20 +36,26 @@ class Poster:
                 full_config = yaml.safe_load(file)
             
             selected_config = {"news_sources": {}}
-            target_categories = ["Latest", "Latest News", "Top News"]
             
             for source, data in full_config["news_sources"].items():
-                selected_feeds = [feed for feed in data["feeds"] if feed["name"] in target_categories]
+                selected_feeds = [feed for feed in data["feeds"] if self.keyword in feed["name"]]
                 if selected_feeds:
                     selected_config["news_sources"][source] = {
                         "name": data["name"],
                         "feeds": selected_feeds
                     }
             
-            self.logger.info(f"Loaded RSS config with {len(selected_config['news_sources'])} sources")
+            self.logger.info(f"已載入 RSS 配置，共 {len(selected_config['news_sources'])} 個來源")
+            
+            # 記錄所選擇的源和訂閱
+            for source, data in selected_config["news_sources"].items():
+                self.logger.info(f"選擇的來源: {source}")
+                for feed in data["feeds"]:
+                    self.logger.info(f"  - 訂閱: {feed['name']}")
+            
             return selected_config
         except Exception as e:
-            self.logger.error(f"Failed to load RSS config: {e}")
+            self.logger.error(f"載入 RSS 配置失敗：{e}")
             raise
 
     def initialize_ai_news_instances(self):
@@ -126,6 +133,7 @@ class Poster:
             
             tool_call = response.choices[0].message.tool_calls[0]
             if tool_call.function.name == "output_news_groups":
+                print(tool_call.function)
                 result = json.loads(tool_call.function.arguments)
                 news_groups = result['news_groups']
                 self.logger.info(f"Grouped news into {len(news_groups)} topics")
@@ -156,19 +164,18 @@ class Poster:
                 })
 
         df = pd.DataFrame(data)
-        self.logger.info(df)
         df.to_csv(save_path, index=False, encoding='utf-8')
         self.logger.info(f"已將分組新聞保存至 {save_path}")
 
     def run(self):
         self.logger.info("開始新聞處理週期")
-        # for key, ai_news in self.ai_news_instances.items():
-        #     try:
-        #         self.logger.info(f"Processing {key}")
-        #         ai_news.run()
-        #         self.last_processed_time[key] = time.time()
-        #     except Exception as e:
-        #         self.logger.error(f"Error processing {key}: {e}")
+        for key, ai_news in self.ai_news_instances.items():
+            try:
+                self.logger.info(f"Processing {key}")
+                ai_news.run()
+                self.last_processed_time[key] = time.time()
+            except Exception as e:
+                self.logger.error(f"Error processing {key}: {e}")
         
         combined_df = self.concat_news_data()
         if combined_df is not None:
