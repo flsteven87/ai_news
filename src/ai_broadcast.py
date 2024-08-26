@@ -8,12 +8,21 @@ import yaml
 
 class AIBroadcast:
     def __init__(self, source, feed_name, voice, force_regenerate=False):
-        self.input_folder = f"./data/news_rewrite/{source}_{feed_name}"
-        self.output_base_folder = "./data/news_broadcast"
         self.source = source
         self.feed_name = feed_name
         self.voice = voice
         self.force_regenerate = force_regenerate
+
+        # 路徑相關參數
+        self.data_dir = Path("./data")
+        self.news_rewrite_dir = self.data_dir / "news_rewrite"
+        self.news_broadcast_dir = self.data_dir / "news_broadcast"
+        self.config_dir = Path("./src/config")
+
+        self.input_folder = self.news_rewrite_dir / f"{source}_{feed_name}"
+        self.output_folder = self.news_broadcast_dir / f"{source}_{feed_name}"
+        self.rss_config_path = self.config_dir / "rss_feed.yaml"
+
         load_dotenv()
         openai.api_key = os.getenv("OPENAI_API_KEY")
         if openai.api_key is None:
@@ -28,23 +37,21 @@ class AIBroadcast:
         response.stream_to_file(output_file)
 
     def run(self):
-        output_folder = Path(self.output_base_folder) / f"{self.source}_{self.feed_name}"
-        output_folder.mkdir(parents=True, exist_ok=True)
+        self.output_folder.mkdir(parents=True, exist_ok=True)
 
-        print(f"輸入資料夾: {self.input_folder}")  # 調試輸出
-        print(f"輸出資料夾: {output_folder}")  # 調試輸出
+        print(f"輸入資料夾: {self.input_folder}")
+        print(f"輸出資料夾: {self.output_folder}")
 
-        # 讀取指定資料夾中的所有 txt 檔案
         for file in os.listdir(self.input_folder):
-            if file.endswith(".txt"):  # 修改為讀取所有 .txt 檔案
-                input_file = Path(self.input_folder) / file
+            if file.endswith(".txt"):
+                input_file = self.input_folder / file
                 with open(input_file, 'r', encoding='utf-8') as f:
                     text = f.read()
                 
-                url_safe_link = file[:-4]  # 保持檔名完全相同，去掉 ".txt"
-                output_file = output_folder / f"{url_safe_link}_{self.voice}.mp3"
+                url_safe_link = file[:-4]
+                output_file = self.output_folder / f"{url_safe_link}_{self.voice}.mp3"
                 
-                print(f"處理檔案: {input_file}")  # 調試輸出
+                print(f"處理檔案: {input_file}")
                 if output_file.exists() and not self.force_regenerate:
                     print(f"音頻文件已存在，跳過: {output_file}")
                 else:
@@ -52,7 +59,8 @@ class AIBroadcast:
                     print(f"已生成音頻: {output_file}")
 
 def load_rss_config():
-    with open('config/rss_feed.yaml', 'r') as file:
+    ai_broadcast = AIBroadcast("", "", "")  # 臨時實例來訪問路徑
+    with open(ai_broadcast.rss_config_path, 'r') as file:
         return yaml.safe_load(file)
 
 def select_source_and_feed(rss_config):
@@ -108,7 +116,7 @@ def select_voice():
 
 def main():
     parser = argparse.ArgumentParser(description="生成新聞音頻播報")
-    parser.add_argument('-s', '--source', help='新聞來')
+    parser.add_argument('-s', '--source', help='新聞來源')
     parser.add_argument('-f', '--feed', help='Feed 名稱')
     parser.add_argument('-v', '--voice', choices=['alloy', 'echo', 'fable', 'onyx', 'nova', 'shimmer'], help='OpenAI TTS 語音選項')
     parser.add_argument('--force', action='store_true', help='強制重新生成所有音頻')

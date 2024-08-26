@@ -1,48 +1,95 @@
-# News Summarizer
+# AI News Summarizer and Broadcaster
 
-News Summarizer 是一個使用 Python 開發的自動新聞摘要生成工具。該工具選定一個 RSS feed，收集新聞的元數據，並通過 JinaAI 的 API 爬取完整的新聞內容。之後，利用 OpenAI 的 API，將新聞標題和內容轉換成繁體中文的摘要。
+AI News Summarizer and Broadcaster is a Python-based tool that automatically fetches, summarizes, and broadcasts news articles. It uses advanced AI technologies to process RSS feeds, generate summaries in Traditional Chinese, and create audio broadcasts of selected news items.
 
-## 功能
+## Features
 
-- 從指定的 RSS feed 自動抓取新聞。
-- 使用 JinaAI 的 API 爬取並處理完整的新聞內容。
-- 透過 OpenAI 的 API 將新聞標題和內容進行摘要，並自動翻譯成繁體中文。
+- Automatic news fetching from specified RSS feeds
+- AI-powered summarization of news articles in Traditional Chinese
+- Selection of important news items based on relevance and impact
+- News grouping and tagging for efficient categorization
+- Text-to-speech conversion for audio broadcasting
+- Web interface for easy viewing of summarized news
 
-## 安裝
+## Installation
 
-要開始使用 News Summarizer，請按照以下步驟進行：
+1. Clone the repository:
+   ```
+   git clone https://github.com/yourusername/ai-news-summarizer.git
+   cd ai_news
+   ```
 
-1. Clone Project：
+2. Create and activate a virtual environment:
+   ```
+   python -m venv venv
+   source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
+   ```
 
-    ```bash
-    git clone https://github.com/flsteven87/ai_news.git
-    cd ai_news
-    ```
+3. Install the required dependencies:
+   ```
+   pip install -r requirements.txt
+   ```
 
-2. 安裝所需的依賴項：
+## Configuration
 
-    創建虛擬環境後
+1. Create a `.env` file in the project root and add your API keys:
+   ```
+   OPENAI_API_KEY=your_openai_api_key
+   ```
 
-    ```bash
-    pip install -r requirements.txt
-    ```
+2. Configure RSS feeds in `src/config/rss_feed.yaml`.
 
-## 環境設定
+## Usage
 
-請創建一個 `.env` 文件在專案根目錄中，並添加以下內容：
+1. Run the main script to fetch and process news:
+   ```
+   python main.py
+   ```
 
-```plaintext
-OPENAI_API_KEY='你的 OpenAI API 密鑰'
-```
+2. To select and summarize important news:
+   ```
+   python -m src.ai_chose
+   ```
 
-3. 透過 RSS feed 抓取新聞並且以AI總結：
+3. To generate audio broadcasts:
+   ```
+   python -m src.ai_broadcast
+   ```
 
-    ```bash
-    python -m ai_news '{RSS_feed_URL}' --file './data/news/{csv_filename}'
-    ```
+4. To view the summarized news through a web interface:
+   ```
+   streamlit run app.py
+   ```
 
-4. 以 Streamlit 呈現新聞結果：
+## Project Structure
 
-    ```
-    streamlit run app.py
-    ```
+- `src/`: Contains the main source code
+  - `ai_news.py`: Handles news fetching and initial processing
+  - `ai_chose.py`: Selects important news items
+  - `ai_rewrite.py`: Rewrites news summaries
+  - `ai_broadcast.py`: Generates audio broadcasts
+- `data/`: Stores processed news data
+- `prompt/`: Contains prompt templates for AI processing
+- `app.py`: Streamlit web application for viewing news
+- `poster.py`: Scheduled news processing and posting
+
+## Dependencies
+
+Key dependencies include:
+- OpenAI
+- Streamlit
+- Pandas
+- Feedparser
+- Google Cloud Text-to-Speech
+
+For a full list, see `requirements.txt`.
+
+## License
+
+This project is licensed under the MIT License - see the `LICENSE` file for details.
+
+## Acknowledgments
+
+- OpenAI for providing the GPT models used in summarization
+- Google Cloud for the Text-to-Speech API
+- All contributors and maintainers of the open-source libraries used in this project

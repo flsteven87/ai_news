@@ -38,7 +38,7 @@ MarkupSafe==2.1.5
 mdurl==0.1.2
 msgpack==1.0.8
 numpy==1.26.4
-openai==1.25.0
+openai==1.42.0
 packageurl-python==0.15.6
 packaging==24.0
 pandas==2.2.2
@@ -61,11 +61,13 @@ python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
 pytz==2024.1
 PyYAML==6.0.2
+ratelimit==2.2.1
 referencing==0.35.0
 requests==2.32.0
 rich==13.7.1
 rpds-py==0.18.0
 rsa==4.9
+schedule==1.2.2
 sgmllib3k==1.0.0
 six==1.16.0
 smmap==5.0.1

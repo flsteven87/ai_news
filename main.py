@@ -1,16 +1,16 @@
-from config.log_config import setup_logger
+from src.config.log_config import setup_logger
 from pathlib import Path
 import argparse
 import yaml
-from ai_news import AINews
-from ai_chose import AIChose
-from ai_rewrite import AIRewrite
-from ai_broadcast import AIBroadcast
+from src.ai_news import AINews
+from src.ai_chose import AIChose
+from src.ai_rewrite import AIRewrite
+from src.ai_broadcast import AIBroadcast
 
 # logger = setup_logger(__name__)
 
 def load_rss_config():
-    with open('config/rss_feed.yaml', 'r') as file:
+    with open('src/config/rss_feed.yaml', 'r') as file:
         return yaml.safe_load(file)
 
 def parse_arguments():
@@ -40,7 +40,7 @@ def select_source_and_feed(rss_config):
             print("可用的 feeds:")
             for i, feed in enumerate(source['feeds'], 1):
                 print(f"{i}. {feed['name']}")
-            feed_choice = input("請輸入要使用的 feed 編號：")
+            feed_choice = input("請輸要使用的 feed 編號：")
             try:
                 feed_index = int(feed_choice) - 1
                 if 0 <= feed_index < len(source['feeds']):
@@ -83,14 +83,12 @@ def main():
         ai_news = AINews(args.rss_url, args.source, args.feed_name)
         ai_news.run()
         print("新聞數據處理完成")
-        print(f"新聞爬取完成，結果保存在 {ai_news.filename}")
 
         # 執行 AI 新聞選擇
         print("開始選擇重要新聞")
         ai_chose = AIChose(args.source, args.feed_name, args.num_chosen)
         ai_chose.run()
         print("重要新聞選擇完成")
-        print(f"重要新聞選擇完成，結果保存在 {ai_chose.output_filename}")
 
         # 執行 AI 重寫
         print("開始重寫重要新聞")
@@ -104,10 +102,9 @@ def main():
         ai_broadcast = AIBroadcast(args.source, args.feed_name, voice)
         ai_broadcast.run()
         print("語音播報生成完成")
-        print(f"語音播報生成完成，結果保存在 news_broadcast/{args.source}_{args.feed_name} 目錄中")
 
     except Exception as e:
-        print(f"執行過程中發生錯誤: {str(e)}")
+        print(f"執行程中發生錯誤: {str(e)}")
         import traceback
         traceback.print_exc()
 

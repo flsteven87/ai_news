@@ -16,19 +16,19 @@ def get_news_files():
     return [f for f in os.listdir('./data/news') if f.endswith('.csv')]
 
 # 生成安全的文件名
-def generate_safe_filename(url, voice_model):
+def generate_safe_filename(url):
     # 移除 "https://" 和 "http://"
     clean_url = url.replace('https://', '').replace('http://', '')
     # 替換所有非字母數字字符為下劃線
     safe_name = ''.join(c if c.isalnum() or c in ['.', '-', '_'] else '_' for c in clean_url)
-    # 截斷長度並添加語音模型
-    return f"{safe_name[:100]}_{voice_model}.mp3"
+    # 截斷長度並添加固定的語音模型 "nova"
+    return f"{safe_name[:100]}_nova.mp3"
 
 # 主界面
 def main():
     st.title('AI國際新聞摘要')
 
-    # 側邊欄：選擇新聞列表和語音模型
+    # 側邊欄：選擇新聞列表
     st.sidebar.header("設置")
     news_files = get_news_files()
     selected_news_file = st.sidebar.selectbox("選擇新聞來源", news_files)
@@ -40,10 +40,6 @@ def main():
     else:
         source = file_name_parts[0]  # 如果沒有語音模型，則只有 source
         feed = ''  # feed 為空字符串
-    
-    # 添加語音模型選擇
-    voice_models = ["shimmer", "echo", "alloy", "fable", "onyx", "nova"]  # 根據實際可用的模型進行調整
-    selected_voice_model = st.sidebar.selectbox("選擇語音模型", voice_models)
 
     # 讀取重要新聞數據
     important_news_data = load_important_news(selected_news_file)
@@ -55,8 +51,8 @@ def main():
         st.write(f"發布時間：{row['published']}")
         st.write(f"摘要：{row['ai_summary']}")
         
-        # 使用新的函數生成安全的文件名，並包含 source_feed 文件夾
-        audio_filename = generate_safe_filename(row['link'], selected_voice_model)
+        # 使用修改後的函數生成安全的文件名，並包含 source_feed 文件夾
+        audio_filename = generate_safe_filename(row['link'])
         audio_file = os.path.join("data", "news_broadcast", f"{source}_{feed}", audio_filename)
         
         if os.path.exists(audio_file):

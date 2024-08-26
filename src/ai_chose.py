@@ -21,13 +21,21 @@ class AIChose:
     def __init__(self, source: str, feed_name: str, n: int):
         self.source = source
         self.feed_name = feed_name
-        self.input_filename = f"./data/news/{source}_{feed_name}.csv"
-        self.output_filename = f"./data/news_chosen/{source}_{feed_name}.csv"
         self.n = n
+        
+        # 路徑相關參數
+        self.data_dir = "./data"
+        self.news_dir = f"{self.data_dir}/news"
+        self.news_chosen_dir = f"{self.data_dir}/news_chosen"
+        self.prompt_dir = "./prompt"
+        
+        self.input_filename = f"{self.news_dir}/{source}_{feed_name}.csv"
+        self.output_filename = f"{self.news_chosen_dir}/{source}_{feed_name}.csv"
+        self.prompt_template_path = f"{self.prompt_dir}/chose_news.txt"
+        
         load_dotenv()
         self.api_key = os.getenv("OPENAI_API_KEY")
         openai.api_key = self.api_key
-        self.prompt_template_path = "prompt/chose_news.txt"
         self.prompt_template = self.load_prompt_template()
 
     def load_prompt_template(self):
@@ -106,7 +114,8 @@ class AIChose:
 
 # 選擇 CSV 文件
 def get_news_files():
-    return [f for f in os.listdir('./data/news') if f.endswith('.csv')]
+    ai_chose = AIChose("", "", 0)  # 創建一個臨時實例來訪問路徑
+    return [f for f in os.listdir(ai_chose.news_dir) if f.endswith('.csv')]
 
 def select_news_file():
     news_files = get_news_files()

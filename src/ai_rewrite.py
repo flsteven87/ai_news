@@ -9,7 +9,15 @@ class AIRewrite:
     def __init__(self):
         load_dotenv()
         self.client = OpenAI()
-        self.prompt_path = "prompt/broadcast_transcript.txt"
+        
+        # 路徑相關參數
+        self.data_dir = Path("./data")
+        self.news_chosen_dir = self.data_dir / "news_chosen"
+        self.news_content_dir = self.data_dir / "news_content"
+        self.news_rewrite_dir = self.data_dir / "news_rewrite"
+        self.prompt_dir = Path("./prompt")
+        
+        self.prompt_path = self.prompt_dir / "broadcast_transcript.txt"
 
     def rewrite_news(self, original_content: str, title: str) -> str:
         with open(self.prompt_path, 'r', encoding='utf-8') as f:
@@ -36,7 +44,7 @@ class AIRewrite:
             return ""
 
     def get_news_files(self):
-        return [f for f in os.listdir('./data/news_chosen') if f.endswith('.csv')]
+        return [f for f in os.listdir(self.news_chosen_dir) if f.endswith('.csv')]
 
     def select_news_file(self):
         news_files = self.get_news_files()
@@ -54,29 +62,26 @@ class AIRewrite:
                 print("請輸入有效的數字。")
 
     def run(self, chosen_output_filename):
-        selected_file = os.path.basename(chosen_output_filename)  # 確保只獲取文件名
+        selected_file = os.path.basename(chosen_output_filename)
         source, feed_name = selected_file.replace('.csv', '').split('_', 1)
-        output_folder = Path(f"./data/news_rewrite/{source}_{feed_name}")  # 更新存放位置
+        output_folder = self.news_rewrite_dir / f"{source}_{feed_name}"
         output_folder.mkdir(parents=True, exist_ok=True)
 
-        # 構建對應的內容檔案路徑
-        content_folder = Path(f"./data/news_content/{source}_{feed_name}")
+        content_folder = self.news_content_dir / f"{source}_{feed_name}"
         
-        # 確保這裡的路徑正確
-        news_df = pd.read_csv(os.path.join('./data/news_chosen', selected_file))
+        news_df = pd.read_csv(self.news_chosen_dir / selected_file)
 
         for index, row in news_df.iterrows():
             link = row['link']
-            safe_filename = self.get_safe_filename(link).replace('.txt', '')  # 移除重複的 .txt
-            content_file_path = content_folder / f"{safe_filename}.txt"  # 確保這裡有 .txt
+            safe_filename = self.get_safe_filename(link).replace('.txt', '')
+            content_file_path = content_folder / f"{safe_filename}.txt"
 
-            if os.path.exists(content_file_path):
+            if content_file_path.exists():
                 with open(content_file_path, 'r', encoding='utf-8') as f:
                     news_content = f.read()
                 rewritten_content = self.rewrite_news(news_content, row['title'])
 
-                # 儲存重寫的內容
-                with open(output_folder / f"{safe_filename}.txt", 'w', encoding='utf-8') as f:  # 更新檔名
+                with open(output_folder / f"{safe_filename}.txt", 'w', encoding='utf-8') as f:
                     f.write(rewritten_content)
                 print(f"已生成重寫內容: {safe_filename}.txt")
             else:
@@ -90,4 +95,11 @@ class AIRewrite:
 
 if __name__ == "__main__":
     ai_rewrite = AIRewrite()
-    ai_rewrite.run()
+    parser = argparse.ArgumentParser(description="重寫新聞內容")
+    parser.add_argument('-f', '--file', help='選擇的新聞 CSV 文件名稱')
+    args = parser.parse_args()
+
+    if not args.file:
+        args.file = ai_rewrite.select_news_file()
+
+    ai_rewrite.run(args.file)
