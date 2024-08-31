@@ -138,3 +138,9 @@ news_sources:
     feeds:
       - name: Latest News
         url: 'https://www.theverge.com/rss/index.xml'
+
+  ai_news:
+    name: AI News
+    feeds:
+      - name: AI News
+        url: 'https://buttondown.com/ainews/rss'

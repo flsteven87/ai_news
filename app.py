@@ -13,7 +13,7 @@ def load_important_news(file_name):
 
 # 獲取 data/news/ 目錄下的所有 CSV 文件
 def get_news_files():
-    return [f for f in os.listdir('./data/news') if f.endswith('.csv')]
+    return [f for f in os.listdir('./data/news_chosen') if f.endswith('.csv')]
 
 # 生成安全的文件名
 def generate_safe_filename(url):
